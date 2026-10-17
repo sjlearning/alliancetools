@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b10">
+<title>BT Troop Planner | SUN Alliance</title>
+<style>
+:root{
+  --bg:#080b10;--card:#111823;--card2:#0d131c;--line:#253246;
+  --text:#f7f9fc;--muted:#93a3b7;--sun:#f6b832;--sun2:#ffd777;
+  --good:#6fd4a0;--warn:#f4c45f;--bad:#f08282;--r:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:
+  radial-gradient(circle at 88% -4%,rgba(246,184,50,.15),transparent 27rem),
+  linear-gradient(180deg,#070a0f,#0a1017 65%,#090d13);
+  color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  min-height:100vh;
+}
+button,input{font:inherit}
+button{-webkit-tap-highlight-color:transparent}
+.app{width:min(100%,760px);margin:0 auto;padding:14px 12px 38px}
+.topbar{display:flex;align-items:center;gap:11px;padding:4px 2px 14px}
+.sunmark{width:38px;height:38px;border-radius:50%;flex:0 0 auto;
+  background:radial-gradient(circle,#fff0bf 0 26%,#f7ba35 27% 62%,#b96d06 63%);
+  box-shadow:0 0 26px rgba(246,184,50,.28)}
+.brand{min-width:0}
+.brand h1{margin:0;font-size:21px;line-height:1.05;letter-spacing:-.025em}
+.brand p{margin:3px 0 0;color:var(--muted);font-size:11px}
+.card{background:rgba(17,24,35,.96);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:0 14px 36px rgba(0,0,0,.24);margin-bottom:12px}
+.card-pad{padding:14px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.section-title{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:900}
+.compact-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.control{
+  min-height:48px;border:1px solid var(--line);background:#0c131c;border-radius:13px;
+  display:flex;align-items:center;justify-content:space-between;padding:6px 8px 6px 11px;gap:8px
+}
+.control-label{font-size:11px;color:var(--muted);font-weight:800}
+.control-value{font-size:15px;font-weight:950;white-space:nowrap}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepbtn{width:36px;height:36px;border:1px solid #33445a;border-radius:10px;background:#172231;color:#f5f7fb;font-weight:950;cursor:pointer}
+.number-input{width:90px;border:0;background:transparent;color:var(--text);text-align:right;font-weight:950;outline:none;padding:8px 4px}
+.number-input[type=number]{appearance:textfield}
+.number-input::-webkit-outer-spin-button,.number-input::-webkit-inner-spin-button{-webkit-appearance:none}
+.subhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:15px 0 8px}
+.subhead h2{font-size:14px;margin:0}
+.subhead span{font-size:10px;color:var(--muted)}
+.preset-row{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:1px}
+.preset-row::-webkit-scrollbar{display:none}
+.preset{
+  flex:0 0 auto;min-height:42px;padding:0 13px;border-radius:12px;border:1px solid var(--line);
+  background:#121c29;color:#cfd8e4;font-weight:900;font-size:12px;cursor:pointer
+}
+.preset.active{background:rgba(246,184,50,.12);border-color:#8a6a27;color:var(--sun2)}
+.ratio-custom{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
+.ratio-box{border:1px solid var(--line);background:#0c131c;border-radius:12px;padding:8px 9px}
+.ratio-box label{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;font-weight:900;letter-spacing:.05em;margin-bottom:2px}
+.ratio-box input{width:100%;border:0;background:transparent;color:var(--text);font-weight:950;font-size:15px;outline:none;padding:2px 0}
+.tier-strip{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:1px 4px 5px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.tier-strip::-webkit-scrollbar{display:none}
+.tier-chip{
+  min-width:58px;height:42px;padding:0 11px;border:1px solid var(--line);border-radius:12px;
+  background:#121c29;color:#d7e0eb;font-size:12px;font-weight:950;cursor:pointer;flex:0 0 auto
+}
+.tier-chip.selected{border-color:#9a7429;background:rgba(246,184,50,.12);color:var(--sun2)}
+
+.tiers{display:grid;gap:8px;margin-top:9px}
+.tier-card{border:1px solid var(--line);background:#0d141e;border-radius:14px;padding:10px}
+.tier-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.tier-actions{display:flex;align-items:center;gap:6px}.clear-tier{height:32px;padding:0 10px;border-radius:9px;border:1px solid var(--line);background:#151f2c;color:#c7d2df;font-size:10px;font-weight:900;cursor:pointer}
+.tier-name{display:flex;align-items:center;gap:8px;font-weight:950}
+.tier-dot{width:26px;height:26px;border-radius:8px;background:#1b293a;border:1px solid #33465e;display:grid;place-items:center;font-size:10px;color:var(--sun2)}
+.remove-tier{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:#151f2c;color:#aebac8;cursor:pointer}
+.tier-inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.troop-input{border:1px solid var(--line);background:#0a1018;border-radius:11px;padding:7px 8px}
+.troop-input label{display:block;font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:900;letter-spacing:.04em}
+.troop-input input{width:100%;border:0;background:transparent;color:var(--text);font-weight:950;font-size:15px;outline:none;padding:3px 0 0}
+.primary{width:100%;min-height:50px;margin-top:12px;border:1px solid #ffcb65;border-radius:14px;background:linear-gradient(180deg,#ffd46d,#e89b17);color:#251804;font-weight:1000;cursor:pointer;box-shadow:0 8px 20px rgba(232,155,23,.17)}
+.output{padding:12px}
+.summary{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.summary-main{font-size:13px;font-weight:950}
+.summary-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.left-pill{flex:0 0 auto;border:1px solid var(--line);background:#0d141e;border-radius:999px;padding:7px 10px;font-size:10px;color:var(--muted);font-weight:900}
+.left-pill strong{color:var(--text)}
+.queue-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding:2px 0 9px}
+
+.qtab{min-width:0;height:38px;padding:0;border:1px solid var(--line);border-radius:10px;background:#121c29;color:#cbd6e2;font-weight:950;font-size:11px;cursor:pointer}
+.qtab.active{background:linear-gradient(180deg,#ffd36b,#e99a18);border-color:#f8c65d;color:#241806}
+.queue-panel{border:1px solid var(--line);background:#0c131c;border-radius:15px;overflow:hidden}
+.qhead{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 11px;border-bottom:1px solid var(--line);background:#111a26}.qhead-left{display:flex;flex-direction:column;gap:2px}.qratio{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:.01em}
+.qhead strong{font-size:14px}
+.qtotal{font-size:11px;color:var(--sun2);font-weight:950}
+.type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.type-col{padding:10px 9px;min-width:0;border-right:1px solid rgba(37,50,70,.72)}
+.type-col:last-child{border-right:0}
+.type-label{font-size:9px;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+.type-total{font-size:10px;font-weight:800;margin:3px 0 7px;white-space:nowrap;color:var(--muted)}
+.tier-lines{display:grid;gap:6px}
+.tier-line{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-size:12px;color:#b7c3d2;font-weight:800}
+.tier-line b{color:#ffffff;white-space:nowrap;font-size:clamp(15px,3.8vw,18px);font-weight:1000;letter-spacing:-.02em}
+.empty-type{font-size:10px;color:#667589}
+.notice{margin-top:9px;border:1px solid rgba(246,196,95,.28);background:rgba(246,196,95,.07);border-radius:12px;padding:9px 10px;color:#f4d99f;font-size:10px;line-height:1.4}
+.hidden{display:none!important}
+.mini-actions{display:flex;gap:7px;margin-top:8px}
+.linkbtn{flex:1;min-height:40px;border:1px solid var(--line);border-radius:11px;background:#141e2b;color:#cbd5e1;font-weight:900;font-size:11px;cursor:pointer}
+.footer{text-align:center;color:#68788b;font-size:9px;padding:6px 6px 0}
+
+.scroll-shell{position:relative;min-width:0}
+.scroll-shell::before,.scroll-shell::after{
+  content:"";position:absolute;top:0;bottom:0;width:26px;z-index:3;pointer-events:none;
+  opacity:0;transition:opacity .18s ease
+}
+.scroll-shell::before{left:0;background:linear-gradient(90deg,var(--card) 15%,rgba(17,24,35,0))}
+.scroll-shell::after{right:0;background:linear-gradient(270deg,var(--card) 15%,rgba(17,24,35,0))}
+.scroll-shell.can-left::before{opacity:1}
+.scroll-shell.can-right::after{opacity:1}
+.scroll-cue{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:4;
+  width:28px;height:28px;border-radius:999px;border:1px solid #3a4b61;
+  background:rgba(17,24,35,.92);color:#d9e2ec;display:grid;place-items:center;
+  font-size:17px;font-weight:900;line-height:1;cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.22);opacity:0;pointer-events:none;
+  transition:opacity .18s ease,transform .18s ease
+}
+.scroll-cue.left{left:3px}
+.scroll-cue.right{right:3px}
+.scroll-shell.can-left .scroll-cue.left,
+.scroll-shell.can-right .scroll-cue.right{opacity:.92;pointer-events:auto}
+.scroll-cue:active{transform:translateY(-50%) scale(.94)}
+.scroll-track{scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.scroll-track::-webkit-scrollbar{display:none}
+
+
+@media(max-width:420px){
+  .queue-tabs{gap:5px}
+  .qtab{height:36px;font-size:10px;border-radius:9px}
+}
+
+@media(min-width:700px){
+  .app{padding-top:24px}
+  .card-pad{padding:18px}
+  .output{padding:16px}
+  .type-col{padding:14px}
+  .type-total{font-size:10px}
+  .tier-line{font-size:12px}
+  .tier-line b{font-size:18px}
+}
+
+/* Shared SUN utility navigation */
+.sun-site-nav{
+  width:min(100%,760px);margin:0 auto 10px;display:flex;align-items:center;justify-content:space-between;
+  gap:10px;padding:6px;border:1px solid #253246;border-radius:14px;background:rgba(14,19,27,.88);
+  box-shadow:0 10px 28px rgba(0,0,0,.20);backdrop-filter:blur(12px);position:relative;z-index:30
+}
+.sun-site-brand{display:flex;align-items:center;gap:7px;color:#f7f9fc;text-decoration:none;font-size:12px;font-weight:950;padding:5px 7px;white-space:nowrap}
+.sun-site-orb{width:19px;height:19px;border-radius:50%;background:radial-gradient(circle,#fff0bf 0 26%,#f7ba35 27% 62%,#b96d06 63%);box-shadow:0 0 15px rgba(246,184,50,.26)}
+.sun-site-links{display:grid;grid-template-columns:1fr 1fr;gap:4px;min-width:0;flex:1;max-width:360px}
+.sun-site-link{
+  min-width:0;text-align:center;text-decoration:none;color:#9aa9bc;font-size:10px;font-weight:900;
+  padding:8px 7px;border:1px solid transparent;border-radius:10px;white-space:nowrap
+}
+.sun-site-link.active{color:#241806;background:linear-gradient(180deg,#ffd46d,#e99a18);border-color:#f5c45d}
+.sun-site-link:not(.active):hover{color:#f7f9fc;background:#151f2e}
+@media(max-width:420px){
+  .sun-site-nav{gap:5px;padding:5px}
+  .sun-site-brand{padding:4px 5px;font-size:11px}
+  .sun-site-links{gap:3px}
+  .sun-site-link{font-size:9px;padding:8px 4px}
+}
+
+
+/* Final shared SUN design-system alignment */
+:root{
+  --sun-bg:#080b10;--sun-card:#111823;--sun-card2:#0d131c;--sun-line:#253246;
+  --sun-text:#f7f9fc;--sun-muted:#93a3b7;--sun-gold:#f6b832;--sun-gold2:#ffd777;
+  --sun-radius:18px;--sun-field-radius:11px;--sun-shadow:0 14px 36px rgba(0,0,0,.24);
+}
+.sun-site-nav{border-radius:14px!important;border-color:var(--sun-line)!important;background:rgba(14,19,27,.92)!important}
+.sun-site-link{min-height:34px;display:flex;align-items:center;justify-content:center}
+.sun-site-link.active{background:linear-gradient(180deg,#ffd46d,#e99a18)!important;color:#241806!important}
+@media(max-width:420px){.sun-site-link{min-height:32px}}
+
+
+/* Final BT Troop Planner suite alignment */
+.app{padding-top:4px}
+@media(min-width:700px){.app{padding-top:10px}}
+
+</style>
+</head>
+<body>
+
+<nav class="sun-site-nav" aria-label="SUN tools">
+  <a class="sun-site-brand" href="index.html" aria-label="SUN Alliance home">
+    <span class="sun-site-orb" aria-hidden="true"></span>
+    <span>SUN</span>
+  </a>
+  <div class="sun-site-links">
+    <a class="sun-site-link active" href="index.html">BT Troop Planner</a>
+    <a class="sun-site-link " href="training.html">Training Q Plan</a>
+  </div>
+</nav>
+
+<main class="app">
+  <header class="topbar">
+    <div class="sunmark" aria-hidden="true"></div>
+    <div class="brand">
+      <h1>SUN Queue Planner</h1>
+      
+    </div>
+  </header>
+
+  <section class="card">
+    <div class="card-pad">
+      <div class="compact-grid">
+        <div class="control">
+          <div>
+            <div class="control-label">Queues</div>
+            <div class="control-value"><span id="queueCountText">6</span></div>
+          </div>
+          <div class="stepper">
+            <button class="stepbtn" id="qMinus" type="button">-</button>
+            <button class="stepbtn" id="qPlus" type="button">+</button>
+          </div>
+          <input id="queueCount" type="hidden" value="6">
+        </div>
+        <div class="control">
+          <div>
+            <div class="control-label">Max / queue</div>
+            <div class="control-value"></div>
+          </div>
+          <input class="number-input" id="queueCap" inputmode="numeric" type="number" min="1" value="70000">
+        </div>
+      </div>
+
+      <div class="subhead">
+        <h2>Ratio</h2>
+        
+      </div>
+      <div class="scroll-shell" data-scroll-shell><button class="scroll-cue left" type="button" aria-label="Scroll left">‹</button><div class="preset-row scroll-track" data-scroll-track>
+        <button class="preset active" data-ratio="5,5,95" type="button">5 : 5 : 95</button>
+        <button class="preset" data-ratio="10,10,80" type="button">10 : 10 : 80</button>
+        <button class="preset" data-ratio="50,20,30" type="button">50 : 20 : 30</button>
+        <button class="preset" data-ratio="custom" type="button">Custom</button>
+      </div><button class="scroll-cue right" type="button" aria-label="Scroll right">›</button></div>
+      <div class="ratio-custom" id="customRatio">
+        <div class="ratio-box"><label>Infantry</label><input id="ratioInfantry" inputmode="numeric" type="number" min="0" value="5"></div>
+        <div class="ratio-box"><label>Cavalry</label><input id="ratioCavalry" inputmode="numeric" type="number" min="0" value="5"></div>
+        <div class="ratio-box"><label>Archer</label><input id="ratioArcher" inputmode="numeric" type="number" min="0" value="95"></div>
+      </div>
+
+      <div class="subhead">
+        <h2>Troop tiers <span style="font-size:11px;color:var(--muted);font-weight:800;">(Multi-select)</span></h2>
+      </div>
+      <div class="scroll-shell" data-scroll-shell><button class="scroll-cue left" type="button" aria-label="Scroll left">‹</button><div class="tier-strip scroll-track" id="tierStrip" data-scroll-track></div><button class="scroll-cue right" type="button" aria-label="Scroll right">›</button></div>
+      <div class="tiers" id="tiers"></div>
+
+      <button class="primary" id="calculate" type="button">Build Queue Plan</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="output">
+      <div class="summary">
+        <div>
+          <div class="summary-main" id="assignedSummary">0 assigned</div>
+          <div class="summary-sub" id="totalSummary">0 total troops</div>
+        </div>
+        <div class="left-pill">Left <strong id="leftTroops">0</strong></div>
+      </div>
+
+      <div class="queue-tabs" id="queueTabs"></div>
+      <div id="queuePanel"></div>
+      
+    </div>
+  </section>
+
+  
+</main>
+
+<script>
+const TYPES=["infantry","cavalry","archer"];
+const PRIORITY=["archer","cavalry","infantry"];
+const TYPE_LABEL={infantry:"Infantry",cavalry:"Cavalry",archer:"Archer"};
+const TIER_OPTIONS=["T10","T9","T8","T7","T6","T5","T4","T3","T2","T1"];
+const SAMPLE={
+  T10:{infantry:147753,cavalry:89318,archer:149634},
+  T9:{infantry:13478,cavalry:12720,archer:13523}
+};
+let selectedTiers=["T10","T9"];
+let queuesData=[];
+let activeQueue=0;
+
+const $=id=>document.getElementById(id);
+const fmt=n=>Number(n||0).toLocaleString("en-US");
+const STORAGE_KEY="sunQueuePlannerStateV1";
+function num(v){const n=Math.floor(Number(v));return Number.isFinite(n)&&n>0?n:0}
+function esc(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+
+function updateScrollAffordance(shell){
+  const track=shell.querySelector("[data-scroll-track]");
+  if(!track)return;
+  const max=Math.max(0,track.scrollWidth-track.clientWidth);
+  shell.classList.toggle("can-left",track.scrollLeft>8);
+  shell.classList.toggle("can-right",track.scrollLeft<max-8);
+}
+function wireScrollShell(shell){
+  const track=shell.querySelector("[data-scroll-track]");
+  if(!track || shell.dataset.wired==="1")return;
+  shell.dataset.wired="1";
+  const left=shell.querySelector(".scroll-cue.left");
+  const right=shell.querySelector(".scroll-cue.right");
+  const nudge=()=>Math.max(120,Math.round(track.clientWidth*.72));
+  left?.addEventListener("click",()=>track.scrollBy({left:-nudge(),behavior:"smooth"}));
+  right?.addEventListener("click",()=>track.scrollBy({left:nudge(),behavior:"smooth"}));
+  track.addEventListener("scroll",()=>updateScrollAffordance(shell),{passive:true});
+  requestAnimationFrame(()=>updateScrollAffordance(shell));
+}
+function refreshScrollAffordances(){
+  document.querySelectorAll("[data-scroll-shell]").forEach(wireScrollShell);
+  document.querySelectorAll("[data-scroll-shell]").forEach(updateScrollAffordance);
+}
+window.addEventListener("resize",refreshScrollAffordances);
+
+
+function saveState(){
+  try{
+    const state={
+      queueCount:num($("queueCount").value)||1,
+      queueCap:num($("queueCap").value)||70000,
+      ratio:{
+        infantry:num($("ratioInfantry").value),
+        cavalry:num($("ratioCavalry").value),
+        archer:num($("ratioArcher").value)
+      },
+      selectedTiers:[...selectedTiers],
+      troops:rows()
+    };
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+  }catch(e){}
+}
+
+function loadSavedState(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw)return false;
+    const state=JSON.parse(raw);
+    if(!state||!Array.isArray(state.selectedTiers)||!Array.isArray(state.troops))return false;
+
+    selectedTiers=state.selectedTiers.filter(t=>TIER_OPTIONS.includes(t));
+    if(!selectedTiers.length)selectedTiers=["T10","T9"];
+
+    $("queueCount").value=Math.max(1,Math.min(20,num(state.queueCount)||6));
+    $("queueCountText").textContent=$("queueCount").value;
+    $("queueCap").value=num(state.queueCap)||70000;
+
+    if(state.ratio){
+      $("ratioInfantry").value=num(state.ratio.infantry);
+      $("ratioCavalry").value=num(state.ratio.cavalry);
+      $("ratioArcher").value=num(state.ratio.archer);
+    }
+
+    const values={};
+    for(const row of state.troops){
+      if(!row||!TIER_OPTIONS.includes(row.tier))continue;
+      values[row.tier]={
+        infantry:num(row.infantry),
+        cavalry:num(row.cavalry),
+        archer:num(row.archer)
+      };
+    }
+
+    renderTierStrip();
+    renderTierCards(values);
+    focusT10(false);
+    syncPresetHighlight();
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+function syncPresetHighlight(){
+  const key=`${num($("ratioInfantry").value)},${num($("ratioCavalry").value)},${num($("ratioArcher").value)}`;
+  let matched=false;
+  document.querySelectorAll(".preset").forEach(btn=>{
+    const isMatch=btn.dataset.ratio===key;
+    btn.classList.toggle("active",isMatch);
+    if(isMatch)matched=true;
+  });
+  if(!matched){
+    const custom=document.querySelector('.preset[data-ratio="custom"]');
+    if(custom)custom.classList.add("active");
+  }
+}
+
+function renderTierStrip(restoreScrollLeft=null){
+  const strip=$("tierStrip");
+  const previousScroll=restoreScrollLeft===null ? strip.scrollLeft : restoreScrollLeft;
+
+  strip.innerHTML=TIER_OPTIONS.map(t=>`<button class="tier-chip ${selectedTiers.includes(t)?"selected":""}" data-tier="${t}" type="button">${t}</button>`).join("");
+
+  requestAnimationFrame(()=>{
+    strip.scrollLeft=previousScroll;
+    refreshScrollAffordances();
+  });
+
+  [...strip.querySelectorAll(".tier-chip")].forEach(btn=>{
+    btn.onclick=()=>{
+      const t=btn.dataset.tier;
+      const remembered=currentTierValues();
+      const scrollPosition=strip.scrollLeft;
+
+      if(selectedTiers.includes(t)){
+        selectedTiers=selectedTiers.filter(x=>x!==t);
+      }else{
+        selectedTiers.push(t);
+        selectedTiers.sort((a,b)=>TIER_OPTIONS.indexOf(a)-TIER_OPTIONS.indexOf(b));
+      }
+
+      renderTierStrip(scrollPosition);
+      renderTierCards(remembered);
+    };
+  });
+}
+
+function currentTierValues(){
+  const out={};
+  [...$("tiers").querySelectorAll(".tier-card")].forEach(card=>{
+    const t=card.dataset.tier;
+    out[t]={
+      infantry:num(card.querySelector(".infantry").value),
+      cavalry:num(card.querySelector(".cavalry").value),
+      archer:num(card.querySelector(".archer").value)
+    };
+  });
+  return out;
+}
+
+function renderTierCards(values){
+  const remembered=values||currentTierValues();
+  $("tiers").innerHTML=selectedTiers.map(t=>{
+    const v=remembered[t]||{infantry:0,cavalry:0,archer:0};
+    return `<div class="tier-card" data-tier="${esc(t)}">
+      <div class="tier-head">
+        <div class="tier-name"><span class="tier-dot">${esc(t)}</span>${esc(t)} troops</div>
+        <div class="tier-actions">
+          <button class="clear-tier" data-clear="${esc(t)}" type="button">Clear</button>
+          <button class="remove-tier" data-remove="${esc(t)}" type="button">X</button>
+        </div>
+      </div>
+      <div class="tier-inputs">
+        <div class="troop-input"><label>Infantry</label><input class="infantry" inputmode="numeric" type="number" min="0" value="${v.infantry||""}" placeholder="0"></div>
+        <div class="troop-input"><label>Cavalry</label><input class="cavalry" inputmode="numeric" type="number" min="0" value="${v.cavalry||""}" placeholder="0"></div>
+        <div class="troop-input"><label>Archer</label><input class="archer" inputmode="numeric" type="number" min="0" value="${v.archer||""}" placeholder="0"></div>
+      </div>
+    </div>`;
+  }).join("");
+
+  [...$("tiers").querySelectorAll(".clear-tier")].forEach(btn=>{
+    btn.onclick=()=>{
+      const card=btn.closest(".tier-card");
+      card.querySelector(".infantry").value="";
+      card.querySelector(".cavalry").value="";
+      card.querySelector(".archer").value="";
+    };
+  });
+
+  [...$("tiers").querySelectorAll(".remove-tier")].forEach(btn=>{
+    btn.onclick=()=>{
+      selectedTiers=selectedTiers.filter(x=>x!==btn.dataset.remove);
+      renderTierStrip();
+      renderTierCards();
+    };
+  });
+}
+
+function rows(){
+  return [...$("tiers").querySelectorAll(".tier-card")].map(card=>({
+    tier:card.dataset.tier,
+    infantry:num(card.querySelector(".infantry").value),
+    cavalry:num(card.querySelector(".cavalry").value),
+    archer:num(card.querySelector(".archer").value)
+  }));
+}
+function availability(rs){
+  const a={};
+  for(const type of TYPES)a[type]=rs.map((r,i)=>({tier:r.tier,row:i,remaining:r[type]}));
+  return a;
+}
+function totalType(a,type){return a[type].reduce((s,x)=>s+x.remaining,0)}
+function take(a,type,amount,bucket){
+  let need=Math.max(0,Math.floor(amount)),used=0;
+  for(const item of a[type]){
+    if(need<=0)break;
+    if(item.remaining<=0)continue;
+    const n=Math.min(need,item.remaining);
+    item.remaining-=n; need-=n; used+=n;
+    let found=bucket[type].find(x=>x.row===item.row);
+    if(!found){found={tier:item.tier,row:item.row,count:0};bucket[type].push(found)}
+    found.count+=n;
+  }
+  return used;
+}
+function targets(cap,ratio){
+  const sum=TYPES.reduce((s,t)=>s+ratio[t],0),out={infantry:0,cavalry:0,archer:0};
+  if(!sum)return out;
+  const raw=TYPES.map(type=>({type,value:cap*ratio[type]/sum}));
+  raw.forEach(x=>out[x.type]=Math.floor(x.value));
+  let rem=cap-TYPES.reduce((s,t)=>s+out[t],0);
+  const tie={archer:0,cavalry:1,infantry:2};
+  raw.map(x=>({...x,f:x.value-Math.floor(x.value)}))
+     .sort((a,b)=>(b.f-a.f)||(tie[a.type]-tie[b.type]))
+     .forEach(x=>{if(rem>0){out[x.type]++;rem--}});
+  return out;
+}
+
+function calculate(){
+  const qc=num($("queueCount").value),cap=num($("queueCap").value);
+  const ratio={infantry:num($("ratioInfantry").value),cavalry:num($("ratioCavalry").value),archer:num($("ratioArcher").value)};
+  const rs=rows();
+  const grand=rs.reduce((s,r)=>s+r.infantry+r.cavalry+r.archer,0);
+  if(!qc||!cap||!(ratio.infantry+ratio.cavalry+ratio.archer)){return}
+
+  const a=availability(rs),tg=targets(cap,ratio),qs=[];
+  let assigned=0;
+
+  for(let i=1;i<=qc;i++){
+    const bucket={infantry:[],cavalry:[],archer:[]};
+    let total=0;
+
+    for(const type of PRIORITY) total+=take(a,type,tg[type],bucket);
+
+    let open=cap-total;
+    for(const type of PRIORITY){
+      if(open<=0)break;
+      const have=totalType(a,type);
+      if(have<=0)continue;
+      const used=take(a,type,Math.min(open,have),bucket);
+      total+=used;open-=used;
+    }
+
+    if(total>0){qs.push({index:i,total,bucket});assigned+=total}
+    if(TYPES.reduce((s,t)=>s+totalType(a,t),0)<=0)break;
+  }
+
+  const left=grand-assigned;
+  queuesData=qs;
+  activeQueue=Math.min(activeQueue,Math.max(0,qs.length-1));
+  $("assignedSummary").textContent=`${fmt(assigned)} assigned`;
+  $("totalSummary").textContent=`${fmt(grand)} total troops`;
+  $("leftTroops").textContent=fmt(left);
+
+  renderQueueTabs();
+  renderActiveQueue();
+  saveState();
+}
+
+function renderQueueTabs(){
+  if(!queuesData.length){
+    $("queueTabs").innerHTML="";
+    return;
+  }
+  $("queueTabs").innerHTML=queuesData.map((q,i)=>`<button class="qtab ${i===activeQueue?"active":""}" data-index="${i}" type="button">Q${q.index}</button>`).join("");
+  refreshScrollAffordances();
+  [...$("queueTabs").querySelectorAll(".qtab")].forEach(btn=>{
+    btn.onclick=()=>{
+      activeQueue=Number(btn.dataset.index);
+      renderQueueTabs();
+      renderActiveQueue();
+    };
+  });
+}
+
+function formatRatioValue(v){
+  const rounded=Math.round(v*10)/10;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+}
+
+function actualQueueRatio(q){
+  const totals={};
+  for(const type of TYPES){
+    totals[type]=(q.bucket[type]||[]).reduce((s,x)=>s+x.count,0);
+  }
+
+  const inputRatio={
+    infantry:num($("ratioInfantry").value),
+    cavalry:num($("ratioCavalry").value),
+    archer:num($("ratioArcher").value)
+  };
+
+  const scale=inputRatio.infantry+inputRatio.cavalry+inputRatio.archer;
+  if(!q.total || !scale)return "0 : 0 : 0";
+
+  const inf=totals.infantry/q.total*scale;
+  const cav=totals.cavalry/q.total*scale;
+  const arch=totals.archer/q.total*scale;
+
+  return `${formatRatioValue(inf)} : ${formatRatioValue(cav)} : ${formatRatioValue(arch)}`;
+}
+
+function renderType(type,bucket){
+  const items=bucket[type]||[];
+  const total=items.reduce((s,x)=>s+x.count,0);
+  if(!total){
+    return `<div class="type-col"><div class="type-label">${TYPE_LABEL[type]}</div><div class="type-total">Total 0</div><div class="empty-type">None</div></div>`;
+  }
+  const lines=items.filter(x=>x.count>0).map(x=>`<div class="tier-line"><span>${esc(x.tier)}</span><b>${fmt(x.count)}</b></div>`).join("");
+  return `<div class="type-col"><div class="type-label">${TYPE_LABEL[type]}</div><div class="type-total">Total ${fmt(total)}</div><div class="tier-lines">${lines}</div></div>`;
+}
+
+function renderActiveQueue(){
+  if(!queuesData.length){
+    $("queuePanel").innerHTML='<div class="queue-panel"><div class="empty">Add troop counts and build your queue plan.</div></div>';
+    return;
+  }
+  const q=queuesData[activeQueue];
+  $("queuePanel").innerHTML=`<div class="queue-panel">
+    <div class="qhead">
+      <div class="qhead-left">
+        <strong>Queue ${q.index}</strong>
+        <span class="qratio">Ratio ${actualQueueRatio(q)} · Inf : Cav : Arch</span>
+      </div>
+      <span class="qtotal">${fmt(q.total)} / ${fmt(num($("queueCap").value))}</span>
+    </div>
+    <div class="type-grid">
+      ${renderType("archer",q.bucket)}
+      ${renderType("cavalry",q.bucket)}
+      ${renderType("infantry",q.bucket)}
+    </div>
+  </div>`;
+}
+
+function focusT10(smooth=true){
+  requestAnimationFrame(()=>{
+    const chip=$("tierStrip")?.querySelector('[data-tier="T10"]');
+    if(chip) chip.scrollIntoView({behavior:smooth?"smooth":"auto",inline:"center",block:"nearest"});
+  });
+}
+
+function setQueueCount(delta){
+  let v=num($("queueCount").value)||1;
+  v=Math.max(1,Math.min(20,v+delta));
+  $("queueCount").value=v;
+  $("queueCountText").textContent=v;
+}
+
+[...document.querySelectorAll(".preset")].forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".preset").forEach(x=>x.classList.remove("active"));
+    btn.classList.add("active");
+    if(btn.dataset.ratio!=="custom"){
+      const [i,c,a]=btn.dataset.ratio.split(",").map(Number);
+      $("ratioInfantry").value=i;$("ratioCavalry").value=c;$("ratioArcher").value=a;
+    }
+  };
+});
+["ratioInfantry","ratioCavalry","ratioArcher"].forEach(id=>{
+  $(id).addEventListener("input",()=>{
+    document.querySelectorAll(".preset").forEach(x=>x.classList.remove("active"));
+    const custom=document.querySelector('.preset[data-ratio="custom"]');
+    if(custom)custom.classList.add("active");
+  });
+});
+
+$("qMinus").onclick=()=>setQueueCount(-1);
+$("qPlus").onclick=()=>setQueueCount(1);
+$("calculate").onclick=()=>{activeQueue=0;calculate()};
+
+refreshScrollAffordances();
+if(!loadSavedState()){
+  selectedTiers=[];
+  renderTierStrip();
+  renderTierCards({});
+  focusT10(false);
+  syncPresetHighlight();
+  $("assignedSummary").textContent="0 assigned";
+  $("totalSummary").textContent="0 total troops";
+  $("leftTroops").textContent="0";
+  renderActiveQueue();
+}else{
+  calculate();
+}
+refreshScrollAffordances();
+</script>
+</body>
+</html>
