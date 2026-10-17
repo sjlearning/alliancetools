@@ -456,6 +456,7 @@ input,select{height:40px!important;border-radius:var(--sun-field-radius)!importa
 
 <script>
 (() => {
+  const STORAGE_KEY='sunTrainingQueuePlannerStateV1';
   const TIERS=['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10'];
   const SCORE={T1:3,T2:4,T3:5,T4:8,T5:12,T6:18,T7:25,T8:35,T9:45,T10:60};
   const BASE_TIME={T1:12,T2:17,T3:24,T4:32,T5:44,T6:60,T7:83,T8:113,T9:131,T10:152}; // seconds per troop
@@ -498,6 +499,71 @@ input,select{height:40px!important;border-radius:var(--sun-field-radius)!importa
     document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.key===key));
     document.querySelectorAll('.troopCard').forEach(c=>c.classList.toggle('active',c.dataset.key===key));
   }
+  function saveState(){
+    const state={
+      eventDate:$('eventDate').value,
+      eventTime:$('eventTime').value,
+      finishBuffer:$('finishBuffer').value,
+      customBuffer:$('customBuffer').value,
+      trainingSpeed:$('trainingSpeed').value,
+      activity:activity(),
+      useNoble:$('useNoble').checked,
+      capacityBuff:$('capacityBuff').checked,
+      applyAll:$('applyAll').checked,
+      activeTroop:document.querySelector('.tab.active')?.dataset.key||'infantry',
+      troops:Object.fromEntries([...document.querySelectorAll('.troopCard')].map(card=>[
+        card.dataset.key,
+        {
+          source:card.querySelector('.source').value,
+          target:card.querySelector('.target').value,
+          qty:card.querySelector('.qty').value
+        }
+      ]))
+    };
+    try{
+      localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+    }catch(error){
+      console.warn('Unable to save Training Q Planner state in this browser.',error);
+    }
+  }
+  function restoreState(){
+    let state;
+    try{
+      const saved=localStorage.getItem(STORAGE_KEY);
+      if(!saved)return;
+      state=JSON.parse(saved);
+    }catch(error){
+      console.warn('Unable to read saved Training Q Planner state from this browser.',error);
+      return;
+    }
+    if(!state||typeof state!=='object'||Array.isArray(state)){
+      console.warn('Saved Training Q Planner state is invalid.');
+      return;
+    }
+
+    for(const id of ['eventDate','eventTime','customBuffer','trainingSpeed']){
+      if(typeof state[id]==='string')$(id).value=state[id];
+    }
+    if(['0','5','15','30','custom'].includes(state.finishBuffer))$('finishBuffer').value=state.finishBuffer;
+    if(state.activity==='training'||state.activity==='promotion'){
+      document.querySelector(`input[name="activity"][value="${state.activity}"]`).checked=true;
+    }
+    for(const id of ['useNoble','capacityBuff','applyAll']){
+      if(typeof state[id]==='boolean')$(id).checked=state[id];
+    }
+    if(state.troops&&typeof state.troops==='object'&&!Array.isArray(state.troops)){
+      document.querySelectorAll('.troopCard').forEach(card=>{
+        const saved=state.troops[card.dataset.key];
+        if(!saved||typeof saved!=='object')return;
+        if(TIERS.includes(saved.source))card.querySelector('.source').value=saved.source;
+        if(TIERS.includes(saved.target))card.querySelector('.target').value=saved.target;
+        if(typeof saved.qty==='string')card.querySelector('.qty').value=saved.qty;
+      });
+    }
+    const activeTroop=TROOPS.some(t=>t.key===state.activeTroop)?state.activeTroop:'infantry';
+    setTab(activeTroop);
+    $('customBuffer').style.display=$('finishBuffer').value==='custom'?'block':'none';
+  }
   function copyInfantryToAll(){
     const src=document.querySelector('.troopCard[data-key="infantry"]');
     if(!src)return;
@@ -509,13 +575,16 @@ input,select{height:40px!important;border-radius:var(--sun-field-radius)!importa
       });
     });
   }
-  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>setTab(t.dataset.key)));
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{setTab(t.dataset.key);saveState()}));
   $('applyAll').addEventListener('change',()=>{if($('applyAll').checked)copyInfantryToAll()});
   const infantryCard=document.querySelector('.troopCard[data-key="infantry"]');
   infantryCard.addEventListener('input',()=>{if($('applyAll').checked)copyInfantryToAll()});
   infantryCard.addEventListener('change',()=>{if($('applyAll').checked)copyInfantryToAll()});
   document.querySelectorAll('input[name="activity"]').forEach(x=>x.addEventListener('change',syncActivity));
+  restoreState();
   syncActivity();
+  document.querySelector('.formCard').addEventListener('input',saveState);
+  document.querySelector('.formCard').addEventListener('change',saveState);
 
   const nf=new Intl.NumberFormat(undefined,{maximumFractionDigits:0});
   const num=v=>Number(v||0);
@@ -629,6 +698,11 @@ input,select{height:40px!important;border-radius:var(--sun-field-radius)!importa
       card.querySelector('.qty').value='';card.querySelector('.target').value='T10';card.querySelector('.source').value='T9';
     });
     setTab('infantry');syncActivity();$('error').classList.remove('show');
+    try{
+      localStorage.removeItem(STORAGE_KEY);
+    }catch(error){
+      console.warn('Unable to clear saved Training Q Planner state in this browser.',error);
+    }
     $('results').className='empty';$('results').innerHTML='<div><div class="emptyMark">K</div><strong>Your schedule will appear here</strong><div class="micro">Enter the queues you want to preload and build the plan.</div></div>';
   }
   $('finishBuffer').addEventListener('change',()=>{const custom=$('finishBuffer').value==='custom';$('customBuffer').style.display=custom?'block':'none';if(custom)$('customBuffer').focus();});
