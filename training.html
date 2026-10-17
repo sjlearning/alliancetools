@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#11131a">
-<title>Training Q Plan | SUN Alliance</title>
+<title>Training Q Planner | SUN Alliance</title>
 <style>
 :root{
   --bg:#f8f6f8;--surface:#fff;--surface2:#fcfafc;--ink:#302a33;--muted:#817786;
@@ -414,10 +414,22 @@ input:focus,select:focus{border-color:#f6b832!important;box-shadow:0 0 0 3px rgb
   --sun-text:#f7f9fc;--sun-muted:#93a3b7;--sun-gold:#f6b832;--sun-gold2:#ffd777;
   --sun-radius:18px;--sun-field-radius:11px;--sun-shadow:0 14px 36px rgba(0,0,0,.24);
 }
-.sun-site-nav{border-radius:14px!important;border-color:var(--sun-line)!important;background:rgba(14,19,27,.92)!important}
-.sun-site-link{min-height:34px;display:flex;align-items:center;justify-content:center}
-.sun-site-link.active{background:linear-gradient(180deg,#ffd46d,#e99a18)!important;color:#241806!important}
-@media(max-width:420px){.sun-site-link{min-height:32px}}
+.sun-site-nav{border-radius:14px!important;border-color:var(--sun-line)!important;background:rgba(14,19,27,.92)!important;view-transition-name:site-nav}
+.sun-site-link{min-height:42px!important;padding:9px 10px!important;border:1px solid #33445a!important;background:#111a26!important;color:#d2dbe7!important;font-size:12px!important;font-weight:950!important;display:flex;align-items:center;justify-content:center;transition:background .18s ease,border-color .18s ease,color .18s ease,transform .18s ease}
+.sun-site-link.active{background:linear-gradient(180deg,#ffd46d,#e99a18)!important;color:#241806!important;border-color:#f5c45d!important}
+.sun-site-link:not(.active):hover{background:#1b2838!important;border-color:#55677d!important;color:#fff!important;transform:translateY(-1px)}
+.sun-site-link:focus-visible{outline:2px solid var(--sun-gold2);outline-offset:2px}
+@media(max-width:420px){.sun-site-link{min-height:38px!important;padding:8px 4px!important;font-size:10px!important}}
+
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:180ms ease-out both page-fade-out}
+::view-transition-new(root){animation:220ms ease-in both page-fade-in}
+::view-transition-group(site-nav){animation-duration:220ms}
+@keyframes page-fade-out{to{opacity:0}}
+@keyframes page-fade-in{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root),::view-transition-group(site-nav){animation:none}
+}
 
 
 /* Final Training Q Plan component alignment to BT Troop Planner */
@@ -452,14 +464,14 @@ input,select{height:40px!important;border-radius:var(--sun-field-radius)!importa
 </head>
 <body>
 
-<nav class="sun-site-nav" aria-label="SUN tools">
+<nav class="sun-site-nav" aria-label="Queue planners">
   <a class="sun-site-brand" href="index.html" aria-label="SUN Alliance home">
     <span class="sun-site-orb" aria-hidden="true"></span>
     <span>SUN</span>
   </a>
   <div class="sun-site-links">
-    <a class="sun-site-link " href="index.html">BT Troop Planner</a>
-    <a class="sun-site-link active" href="training.html">Training Q Plan</a>
+    <a class="sun-site-link" href="index.html">BT Q Planner</a>
+    <a class="sun-site-link active" href="training.html" aria-current="page">Training Q Planner</a>
   </div>
 </nav>
 
