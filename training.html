@@ -239,31 +239,8 @@ input:focus,select:focus{border-color:#e4a82c;box-shadow:0 0 0 3px rgba(247,182,
   .shell:before{right:-54px;top:-48px;font-size:130px}.brandline{letter-spacing:.09em}.localTag{background:#131821}.formCard,.resultCard{box-shadow:0 16px 40px rgba(0,0,0,.28)}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
-/* SUN duck swim microinteraction */
-.duckLane{position:relative;height:74px;margin-top:18px;overflow:hidden;pointer-events:none;contain:layout paint;isolation:isolate}
-.waterWaves{position:absolute;left:2%;right:2%;bottom:7px;width:96%;height:28px;z-index:0;overflow:visible}
-.waterWaves path{fill:none;stroke-linecap:round;stroke-width:2.5}
-.waterWaves .wave1{stroke:rgba(84,184,231,.62)}
-.waterWaves .wave2{stroke:rgba(84,184,231,.34)}
-.duckRunner{position:absolute;left:-70px;bottom:18px;width:62px;height:44px;opacity:0;z-index:1;filter:drop-shadow(0 7px 10px rgba(0,0,0,.30))}
-.duckRunner svg{display:block;width:100%;height:100%;overflow:visible}
-.duckLane.run .duckRunner{opacity:1;animation:duckSwim 4.8s linear infinite}
-@keyframes duckSwim{
-  0%{left:-70px;transform:translateY(1px) rotate(-1.5deg)}
-  12.5%{left:12.5%;transform:translateY(-2px) rotate(1.5deg)}
-  25%{left:25%;transform:translateY(0) rotate(-1deg)}
-  37.5%{left:37.5%;transform:translateY(-2.5px) rotate(1deg)}
-  50%{left:50%;transform:translateY(0) rotate(-1deg)}
-  62.5%{left:62.5%;transform:translateY(-2px) rotate(1.5deg)}
-  75%{left:75%;transform:translateY(0) rotate(-1deg)}
-  87.5%{left:87.5%;transform:translateY(-2px) rotate(1deg)}
-  100%{left:calc(100% + 70px);transform:translateY(1px) rotate(-1.5deg)}
-}
 .resourceSvg{width:22px;height:22px;display:block}
 .miniIcon{padding:2px}
-@media(prefers-reduced-motion:reduce){
-  .duckLane.run .duckRunner{animation:none;left:calc(50% - 31px);opacity:1;transform:none}
-}
 
 
 /* SUN mobile-first utility refresh. Presentation only. */
@@ -330,7 +307,6 @@ input:focus,select:focus{border-color:#f6b832!important;box-shadow:0 0 0 3px rgb
 .actions{grid-template-columns:1fr auto!important;gap:7px!important;margin-top:10px!important}
 .btn{height:42px!important;border-radius:11px!important;font-size:11px!important}
 .secondary{background:#151f2e!important;border-color:#253246!important;color:#c7d2df!important}
-.duckLane{height:52px!important;margin-top:10px!important}
 .resultCard{margin-bottom:0!important}
 .empty{min-height:160px!important;padding:20px!important;border-radius:13px!important;background:#0d141e!important;border-color:#253246!important}
 .emptyMark{width:38px!important;height:38px!important;border-radius:12px!important}
@@ -465,24 +441,6 @@ input,select{height:40px!important;border-radius:var(--sun-field-radius)!importa
       <div class="actions">
         <button id="calculate" class="btn primary">Build plan</button>
         <button id="reset" class="btn secondary" type="button">Reset</button>
-      </div>
-      <div id="duckLane" class="duckLane" aria-hidden="true">
-        <svg class="waterWaves" viewBox="0 0 600 28" preserveAspectRatio="none">
-          <path class="wave1" d="M0 9 C30 2 60 16 90 9 S150 2 180 9 S240 16 270 9 S330 2 360 9 S420 16 450 9 S510 2 540 9 S570 16 600 9"/>
-          <path class="wave2" d="M0 21 C35 14 70 27 105 21 S175 14 210 21 S280 27 315 21 S385 14 420 21 S490 27 525 21 S565 15 600 21"/>
-        </svg>
-        <span class="duckRunner">
-          <svg viewBox="0 0 92 62" role="img" aria-label="Yellow rubber duck">
-            <ellipse cx="39" cy="42" rx="30" ry="15" fill="#FFD52F"/>
-            <path d="M13 39c7-8 20-12 33-10 7 1 13 4 17 8-8-2-15-1-21 2-8 4-15 6-29 0z" fill="#FFE35C" opacity=".72"/>
-            <path d="M31 39c7-7 18-7 24 0-4 6-14 9-24 7-2-2-2-5 0-7z" fill="#F5BC14"/>
-            <path d="M54 31c1-8 6-14 14-16 9-2 17 4 18 12 1 8-4 15-12 17-6 1-12-1-16-6-2-2-3-4-4-7z" fill="#FFD52F"/>
-            <path d="M79 27c5-1 10 0 13 3-3 5-8 7-14 7-3 0-6-1-8-2 1-4 4-7 9-8z" fill="#F6A800"/>
-            <circle cx="72.5" cy="24.5" r="2.2" fill="#1C2027"/>
-            <circle cx="71.8" cy="23.8" r=".7" fill="#FFF5C8"/>
-            <path d="M17 47c10 4 24 5 36 2" fill="none" stroke="#FFE97B" stroke-width="2.4" stroke-linecap="round" opacity=".75"/>
-          </svg>
-        </span>
       </div>
       <div id="error" class="error"></div>
     </section>
@@ -671,16 +629,10 @@ input,select{height:40px!important;border-radius:var(--sun-field-radius)!importa
       card.querySelector('.qty').value='';card.querySelector('.target').value='T10';card.querySelector('.source').value='T9';
     });
     setTab('infantry');syncActivity();$('error').classList.remove('show');
-    $('duckLane')?.classList.remove('run');
     $('results').className='empty';$('results').innerHTML='<div><div class="emptyMark">K</div><strong>Your schedule will appear here</strong><div class="micro">Enter the queues you want to preload and build the plan.</div></div>';
   }
   $('finishBuffer').addEventListener('change',()=>{const custom=$('finishBuffer').value==='custom';$('customBuffer').style.display=custom?'block':'none';if(custom)$('customBuffer').focus();});
-  function launchDuck(){
-    const lane=$('duckLane');
-    if(!lane)return;
-    lane.classList.add('run');
-  }
-  $('calculate').addEventListener('click',()=>{launchDuck();render();});$('reset').addEventListener('click',reset);
+  $('calculate').addEventListener('click',render);$('reset').addEventListener('click',reset);
 })();
 </script>
 </body>
