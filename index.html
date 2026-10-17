@@ -23,8 +23,8 @@ body{
 }
 button,input{font:inherit}
 button{-webkit-tap-highlight-color:transparent}
-.app{width:min(100%,760px);margin:0 auto;padding:14px 12px 38px}
-.topbar{display:flex;align-items:center;padding:4px 2px 14px}
+.app{width:min(100%,760px);margin:0 auto;padding:0}
+.topbar{display:flex;align-items:center;padding:0}
 .brand{min-width:0}
 .brand h1{margin:0;font-size:21px;line-height:1.05;letter-spacing:-.025em}
 .brand p{margin:3px 0 0;color:var(--muted);font-size:11px}
@@ -148,58 +148,8 @@ button{-webkit-tap-highlight-color:transparent}
   .tier-line b{font-size:18px}
 }
 
-/* Shared SUN utility navigation */
-.sun-site-nav{
-  width:min(100%,760px);margin:0 auto 10px;display:flex;align-items:center;justify-content:space-between;
-  gap:10px;padding:6px;border:1px solid #253246;border-radius:14px;background:rgba(14,19,27,.88);
-  box-shadow:0 10px 28px rgba(0,0,0,.20);backdrop-filter:blur(12px);position:relative;z-index:30
-}
-.sun-site-brand{display:flex;align-items:center;gap:7px;color:#f7f9fc;text-decoration:none;font-size:12px;font-weight:950;padding:5px 7px;white-space:nowrap}
-.sun-site-orb{width:19px;height:19px;border-radius:50%;background:radial-gradient(circle,#fff0bf 0 26%,#f7ba35 27% 62%,#b96d06 63%);box-shadow:0 0 15px rgba(246,184,50,.26)}
-.sun-site-links{display:grid;grid-template-columns:1fr 1fr;gap:4px;min-width:0;flex:1;max-width:360px}
-.sun-site-link{
-  min-width:0;text-align:center;text-decoration:none;color:#9aa9bc;font-size:10px;font-weight:900;
-  padding:8px 7px;border:1px solid transparent;border-radius:10px;white-space:nowrap
-}
-.sun-site-link.active{color:#241806;background:linear-gradient(180deg,#ffd46d,#e99a18);border-color:#f5c45d}
-.sun-site-link:not(.active):hover{color:#f7f9fc;background:#151f2e}
-@media(max-width:420px){
-  .sun-site-nav{gap:5px;padding:5px}
-  .sun-site-brand{padding:4px 5px;font-size:11px}
-  .sun-site-links{gap:3px}
-  .sun-site-link{font-size:9px;padding:8px 4px}
-}
-
-
-/* Final shared SUN design-system alignment */
-:root{
-  --sun-bg:#080b10;--sun-card:#111823;--sun-card2:#0d131c;--sun-line:#253246;
-  --sun-text:#f7f9fc;--sun-muted:#93a3b7;--sun-gold:#f6b832;--sun-gold2:#ffd777;
-  --sun-radius:18px;--sun-field-radius:11px;--sun-shadow:0 14px 36px rgba(0,0,0,.24);
-}
-.sun-site-nav{border-radius:14px!important;border-color:var(--sun-line)!important;background:rgba(14,19,27,.92)!important;view-transition-name:site-nav}
-.sun-site-link{min-height:42px!important;padding:9px 10px!important;border:1px solid #33445a!important;background:#111a26!important;color:#d2dbe7!important;font-size:12px!important;font-weight:950!important;display:flex;align-items:center;justify-content:center;transition:background .18s ease,border-color .18s ease,color .18s ease,transform .18s ease}
-.sun-site-link.active{background:linear-gradient(180deg,#ffd46d,#e99a18)!important;color:#241806!important;border-color:#f5c45d!important}
-.sun-site-link:not(.active):hover{background:#1b2838!important;border-color:#55677d!important;color:#fff!important;transform:translateY(-1px)}
-.sun-site-link:focus-visible{outline:2px solid var(--sun-gold2);outline-offset:2px}
-@media(max-width:420px){.sun-site-link{min-height:38px!important;padding:8px 4px!important;font-size:10px!important}}
-
-@view-transition{navigation:auto}
-::view-transition-old(root){animation:180ms ease-out both page-fade-out}
-::view-transition-new(root){animation:220ms ease-in both page-fade-in}
-::view-transition-group(site-nav){animation-duration:220ms}
-@keyframes page-fade-out{to{opacity:0}}
-@keyframes page-fade-in{from{opacity:0}}
-@media(prefers-reduced-motion:reduce){
-  ::view-transition-old(root),::view-transition-new(root),::view-transition-group(site-nav){animation:none}
-}
-
-
-/* Final BT Troop Planner suite alignment */
-.app{padding-top:4px}
-@media(min-width:700px){.app{padding-top:10px}}
-
 </style>
+<link rel="stylesheet" href="css/shared.css">
 </head>
 <body>
 
@@ -215,10 +165,10 @@ button{-webkit-tap-highlight-color:transparent}
 </nav>
 
 <main class="app">
-  <header class="topbar">
+  <header class="topbar page-header">
     <div class="brand">
-      <h1>BT Queue Planner</h1>
-      
+      <h1 class="page-title">BT Queue Planner</h1>
+      <p class="subtitle">Build troop queues by ratio, troop type, and tier.</p>
     </div>
   </header>
 
